@@ -1,20 +1,65 @@
 import { useState, useRef } from 'react';
 import { CAREER_OPPORTUNITIES, FAQ_ITEMS } from '../data/companyData';
 import { useWeichieScrollAnimations } from '../hooks/useWeichieScrollAnimations';
+import { FileText, UploadCloud, X } from 'lucide-react';
 
 export default function CareersPage() {
   const pageRef = useRef(null);
+  const cvInputRef = useRef(null);
   useWeichieScrollAnimations(pageRef);
 
   const [selectedRole, setSelectedRole] = useState(CAREER_OPPORTUNITIES[0].title);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [note, setNote] = useState('');
+  const [cvFile, setCvFile] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [cvError, setCvError] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  const handleCvFile = (file) => {
+    if (!file) return;
+
+    const acceptedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+
+    if (!acceptedTypes.includes(file.type)) {
+      setCvFile(null);
+      setCvError('Please upload your CV as a PDF, DOC, or DOCX file.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setCvFile(null);
+      setCvError('Your CV must be smaller than 10 MB.');
+      return;
+    }
+
+    setCvFile(file);
+    setCvError('');
+  };
+
+  const handleCvDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    handleCvFile(e.dataTransfer.files[0]);
+  };
+
+  const removeCv = () => {
+    setCvFile(null);
+    setCvError('');
+    if (cvInputRef.current) cvInputRef.current.value = '';
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !email) return;
+    if (!name || !email || !cvFile) {
+      if (!cvFile) setCvError('Please attach your CV before submitting.');
+      return;
+    }
     setSubmitted(true);
   };
 
@@ -105,6 +150,7 @@ export default function CareersPage() {
                     setName('');
                     setEmail('');
                     setNote('');
+                    removeCv();
                   }}
                 >
                   Submit another application
@@ -165,6 +211,46 @@ export default function CareersPage() {
                     placeholder="Tell us about your coding projects, coursework or technical passions..."
                   />
                 </label>
+
+                <div className="cv-upload-field">
+                  <span className="cv-upload-label">CV / resume *</span>
+                  <input
+                    ref={cvInputRef}
+                    className="cv-upload-input"
+                    type="file"
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={(e) => handleCvFile(e.target.files[0])}
+                  />
+                  {cvFile ? (
+                    <div className="cv-file-selected">
+                      <FileText size={20} aria-hidden="true" />
+                      <span title={cvFile.name}>{cvFile.name}</span>
+                      <button type="button" onClick={removeCv} aria-label="Remove CV">
+                        <X size={18} aria-hidden="true" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`cv-dropzone${isDragging ? ' is-dragging' : ''}`}
+                      onClick={() => cvInputRef.current?.click()}
+                      onDragEnter={(e) => {
+                        e.preventDefault();
+                        setIsDragging(true);
+                      }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDragLeave={(e) => {
+                        if (!e.currentTarget.contains(e.relatedTarget)) setIsDragging(false);
+                      }}
+                      onDrop={handleCvDrop}
+                    >
+                      <UploadCloud size={24} aria-hidden="true" />
+                      <span>Drag and drop your CV here, or <strong>browse</strong></span>
+                      <small>PDF, DOC, or DOCX up to 10 MB</small>
+                    </button>
+                  )}
+                  {cvError && <p className="cv-upload-error" role="alert">{cvError}</p>}
+                </div>
 
                 <div style={{ marginTop: '1.8rem', textAlign: 'right' }}>
                   <button type="submit" className="pill dark">

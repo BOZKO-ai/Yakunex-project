@@ -22,7 +22,7 @@ export const COMPANY_INFO = {
   },
   social: {
     linkedin: 'https://linkedin.com/company/yakunex',
-    github: 'https://github.com/yakunex',
+    github: 'https://github.com/BOZKO-ai/Yakunex-project',
     twitter: 'https://x.com/yakunex',
     facebook: 'https://facebook.com/yakunex',
     instagram: 'https://instagram.com/yakunex'
