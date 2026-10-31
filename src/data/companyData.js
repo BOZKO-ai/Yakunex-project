@@ -17,7 +17,7 @@ export const COMPANY_INFO = {
     supportEmail: 'support@yakunex.com',
     careersEmail: 'careers@yakunex.com',
     phone: '+94 (0) 81 257 8900',
-    hotline: '+94 77 123 4567',
+    hotline: '+94 74 369 2999',
     workingHours: 'Monday – Friday: 8:30 AM – 5:30 PM (IST)'
   },
   social: {
