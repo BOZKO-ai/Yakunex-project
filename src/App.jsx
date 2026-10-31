@@ -4,6 +4,7 @@ import Preloader from './components/Preloader';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import ScrollToTop from './components/common/ScrollToTop';
+import WhatsAppButton from './components/common/WhatsAppButton';
 import { ThemeProvider } from './context/ThemeContext';
 
 // Multi-Page Views
@@ -29,6 +30,7 @@ export default function App() {
 
           <ScrollToTop />
           <Navbar />
+          <WhatsAppButton />
 
           <main id="main-content">
             <Routes>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-
-import { Search } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, ArrowUpRight, X, Sun, Moon } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import { useTheme } from '../../context/ThemeContext';
 import GlobalSearch from './GlobalSearch';
@@ -265,10 +265,11 @@ export default function Navbar() {
   // Navigation Links including explicit Home button
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Portfolio', path: '/portfolio' },
+    { name: 'About Us', path: '/about' },
     { name: 'Services', path: '/services' },
-    { name: 'About', path: '/about' },
-    { name: 'Careers', path: '/careers' }
+    { name: 'Projects', path: '/portfolio' },
+    { name: 'Careers', path: '/careers' },
+    { name: 'Contact', path: '/contact' }
   ];
 
   return (
@@ -406,87 +407,85 @@ export default function Navbar() {
       </header>
 
       {/* Fullscreen Mobile Drawer */}
-      <div className={`mobile-nav-fullscreen ${open ? 'open' : ''}`}>
-        <div style={{ maxWidth: '420px', width: '100%', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <img
-                src={logoImg}
-                alt="Yakunex"
-                style={{
-                  width: '38px',
-                  height: '38px',
-                  objectFit: 'contain',
-                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.18))'
-                }}
-              />
-              <span style={{ fontSize: '1.4rem', fontWeight: 300, color: 'var(--ink)' }}>Yakunex</span>
-            </div>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="mobile-nav-fullscreen"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="mobile-drawer-inner">
+              {/* Header */}
+              <div className="mobile-drawer-header">
+                <div className="mobile-drawer-brand">
+                  <img src={logoImg} alt="Yakunex" className="mobile-brand-logo" />
+                  <div className="mobile-brand-info">
+                    <span className="mobile-brand-name">YAKUNEX</span>
+                    <span className="mobile-brand-sub">TECHNOLOGIES</span>
+                  </div>
+                </div>
 
-            {/* Dark mode button in mobile drawer */}
-            <button
-              className="theme-toggle-btn mobile-drawer-theme-toggle"
-              onClick={toggleTheme}
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              type="button"
-            >
-              {theme === 'dark' ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-              )}
-            </button>
-          </div>
+                <div className="mobile-drawer-actions">
+                  <button
+                    className="mobile-action-btn theme-toggle"
+                    onClick={toggleTheme}
+                    aria-label="Toggle Theme"
+                  >
+                    {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                  </button>
+                  <button
+                    className="mobile-action-btn close-btn"
+                    onClick={() => setOpen(false)}
+                    aria-label="Close Menu"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+              </div>
 
-          <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2.5rem' }}>
-            {navLinks.map((link) => (
-              <li key={link.path}>
-                <NavLink
-                  to={link.path}
-                  end={link.path === '/'}
+              {/* Navigation Links */}
+              <nav className="mobile-drawer-nav">
+                {navLinks.map((link, idx) => (
+                  <motion.div
+                    key={link.path}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + idx * 0.05 }}
+                  >
+                    <NavLink
+                      to={link.path}
+                      end={link.path === '/'}
+                      className="mobile-nav-item"
+                      onClick={() => setOpen(false)}
+                    >
+                      <span className="mobile-nav-label">{link.name}</span>
+                      <ArrowUpRight className="mobile-nav-arrow" size={20} />
+                    </NavLink>
+                  </motion.div>
+                ))}
+              </nav>
+
+              {/* CTA Button */}
+              <motion.div
+                className="mobile-drawer-footer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Link
+                  to="/contact"
+                  className="mobile-cta-btn"
                   onClick={() => setOpen(false)}
                 >
-                  {link.name}
-                </NavLink>
-              </li>
-            ))}
-            <li>
-              <NavLink to="/contact" onClick={() => setOpen(false)}>
-                Contact
-              </NavLink>
-            </li>
-          </ul>
-
-          <Link
-            to="/contact"
-            className="weichie-cta-btn"
-            style={{ width: '100%', justifyContent: 'space-between', padding: '0.65rem 0.75rem 0.65rem 1.4rem' }}
-            onClick={() => setOpen(false)}
-          >
-            <span style={{ fontSize: '1rem', fontWeight: 500 }}>Contact</span>
-            <span className="weichie-cta-icon-badge" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1">
-                <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-                <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6" />
-                <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" />
-                <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
-              </svg>
-            </span>
-          </Link>
-        </div>
-      </div>
+                  Start a conversation
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Global Search Command Palette */}
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
